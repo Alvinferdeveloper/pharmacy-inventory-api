@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, CreateDateColumn, DeleteDateColumn } from "typeorm";
 import { Customer } from "./Customer.entity";
 import { User } from "./User.entity";
 import { InvoiceDetail } from "./InvoiceDetail.entity";
@@ -30,4 +30,7 @@ export class Invoice {
 
     @OneToMany(() => InvoiceDetail, invoiceDetail => invoiceDetail.invoice)
     invoiceDetails: InvoiceDetail[];
+
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
+    deletedAt: Date;
 }

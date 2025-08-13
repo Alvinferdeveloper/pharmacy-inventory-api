@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, BeforeInsert } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, BeforeInsert, DeleteDateColumn } from "typeorm";
 import { Role } from "./Role.entity";
 import { Invoice } from "./Invoice.entity";
 import * as bcrypt from 'bcrypt';
@@ -28,4 +28,7 @@ export class User {
     async hashPassword() {
         this.password = await bcrypt.hash(this.password, 10);
     }
+
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
+    deletedAt: Date;
 }

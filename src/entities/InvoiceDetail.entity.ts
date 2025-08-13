@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, DeleteDateColumn } from "typeorm";
 import { Invoice } from "./Invoice.entity";
 import { Product } from "./Product.entity";
 
@@ -23,4 +23,7 @@ export class InvoiceDetail {
 
     @Column('decimal', { precision: 10, scale: 2 })
     subtotal: number;
+
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
+    deletedAt: Date;
 }

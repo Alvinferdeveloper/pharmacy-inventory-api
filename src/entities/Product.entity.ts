@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, DeleteDateColumn } from "typeorm";
 import { Category } from "./Category.entity";
 import { Supplier } from "./Supplier.entity";
 import { InvoiceDetail } from "./InvoiceDetail.entity";
@@ -46,4 +46,7 @@ export class Product {
 
     @OneToMany(() => InventoryMovement, inventoryMovement => inventoryMovement.product)
     inventoryMovements: InventoryMovement[];
+
+    @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
+    deletedAt: Date;
 }
