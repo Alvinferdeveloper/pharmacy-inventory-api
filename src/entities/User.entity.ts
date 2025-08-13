@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, BeforeInsert } from "typeorm";
 import { Role } from "./Role.entity";
 import { Invoice } from "./Invoice.entity";
+import * as bcrypt from 'bcrypt';
 
 @Entity('users')
 export class User {
@@ -22,4 +23,9 @@ export class User {
 
     @OneToMany(() => Invoice, invoice => invoice.user)
     invoices: Invoice[];
+
+    @BeforeInsert()
+    async hashPassword() {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
 }
