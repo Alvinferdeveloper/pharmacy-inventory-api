@@ -35,6 +35,9 @@ dependencies:
   class-validator:
     specifier: ^0.14.2
     version: 0.14.2
+  date-fns:
+    specifier: ^4.1.0
+    version: 4.1.0
   mysql2:
     specifier: ^3.14.3
     version: 3.14.3
@@ -2765,6 +2768,10 @@ packages:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  /date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+    dev: false
 
   /dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
