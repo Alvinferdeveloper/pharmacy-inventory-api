@@ -10,7 +10,7 @@ export class CustomerService {
   constructor(
     @Inject(REPOSITORIES.CUSTOMER)
     private readonly customerRepository: Repository<Customer>,
-  ) {}
+  ) { }
 
   async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
     const existingCustomer = await this.customerRepository.findOne({ where: { identification: createCustomerDto.identification } });
@@ -32,24 +32,24 @@ export class CustomerService {
     }
     return customer;
   }
-
+s
   async update(id: number, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
     const customer = await this.findOne(id);
     if (!customer) {
       throw new ConflictException('Customer not found');
     }
     if (updateCustomerDto.identification && updateCustomerDto.identification !== customer.identification) {
-        const existingCustomer = await this.customerRepository.findOne({ where: { identification: updateCustomerDto.identification } });
-        if (existingCustomer) {
-            throw new ConflictException('Customer with this identification already exists');
-        }
+      const existingCustomer = await this.customerRepository.findOne({ where: { identification: updateCustomerDto.identification } });
+      if (existingCustomer) {
+        throw new ConflictException('Customer with this identification already exists');
+      }
     }
-    
+
     Object.assign(customer, updateCustomerDto);
     return this.customerRepository.save(customer);
   }
 
   async remove(id: number): Promise<void> {
-    await this.customerRepository.delete(id);
+    await this.customerRepository.softDelete(id);
   }
 }
