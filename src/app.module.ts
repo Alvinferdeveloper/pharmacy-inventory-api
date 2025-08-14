@@ -9,9 +9,10 @@ import { UserModule } from './user/user.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { ProductModule } from './product/product.module';
 import { CustomerModule } from './customer/customer.module';
+import { InvoiceModule } from './invoice/invoice.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, CategoryModule, UserModule, SupplierModule, ProductModule, CustomerModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, CategoryModule, UserModule, SupplierModule, ProductModule, CustomerModule, InvoiceModule],
   controllers: [AppController],
   providers: [AppService],
 })
