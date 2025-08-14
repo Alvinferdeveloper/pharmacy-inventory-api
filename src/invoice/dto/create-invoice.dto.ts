@@ -3,7 +3,7 @@ import { Type } from 'class-transformer';
 
 class ProductDto {
   @IsInt()
-  idProduct!: number;
+  productId!: number;
 
   @IsInt()
   quantity!: number;
@@ -11,7 +11,7 @@ class ProductDto {
 
 export class CreateInvoiceDto {
   @IsInt()
-  idCustomer!: number;
+  customerId!: number;
 
   @IsArray()
   @ValidateNested({ each: true })

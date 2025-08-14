@@ -26,7 +26,7 @@ export class InvoiceService {
     private readonly customerRepository: Repository<Customer>,
     @Inject(REPOSITORIES.USER)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async create(createInvoiceDto: CreateInvoiceDto, userId: number): Promise<Invoice> {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -34,9 +34,9 @@ export class InvoiceService {
     await queryRunner.startTransaction();
 
     try {
-      const { idCustomer, products } = createInvoiceDto;
+      const { customerId, products } = createInvoiceDto;
 
-      const customer = await this.customerRepository.findOne({ where: { idCustomer: idCustomer } });
+      const customer = await this.customerRepository.findOne({ where: { idCustomer: customerId } });
       if (!customer) {
         throw new NotFoundException('Customer not found');
       }
@@ -50,9 +50,9 @@ export class InvoiceService {
       const productsToUpdate: { product: Product, quantity: number }[] = [];
 
       for (const productDto of products) {
-        const product = await this.productRepository.findOne({ where: { idProduct: productDto.idProduct } });
+        const product = await this.productRepository.findOne({ where: { idProduct: productDto.productId } });
         if (!product) {
-          throw new NotFoundException(`Product with ID ${productDto.idProduct} not found`);
+          throw new NotFoundException(`Product with ID ${productDto.productId} not found`);
         }
         if (product.stock < productDto.quantity) {
           throw new ConflictException(`Not enough stock for product ${product.productName}`);
@@ -65,8 +65,8 @@ export class InvoiceService {
         customer,
         user,
         total,
-        tax: 0, 
-        discount: 0,
+        tax: 0, // Assuming tax is calculated elsewhere or is 0
+        discount: 0, // Assuming discount is calculated elsewhere or is 0
       });
 
       const savedInvoice = await queryRunner.manager.save(invoice);
@@ -95,11 +95,27 @@ export class InvoiceService {
 
       await queryRunner.commitTransaction();
       return savedInvoice;
-    } catch (error) {      
+    } catch (error) {
       await queryRunner.rollbackTransaction();
       throw error;
     } finally {
       await queryRunner.release();
     }
+  }
+
+  findAll(): Promise<Invoice[]> {
+    return this.invoiceRepository.find({ relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'] });
+  }
+
+  async findOne(id: number): Promise<Invoice> {
+    const invoice = await this.invoiceRepository.findOne({ where: { idInvoice: id }, relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'] });
+    if (!invoice) {
+      throw new NotFoundException(`Invoice with ID ${id} not found`);
+    }
+    return invoice;
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.invoiceRepository.softDelete(id);
   }
 }
