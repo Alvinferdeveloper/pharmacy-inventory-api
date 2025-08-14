@@ -8,10 +8,11 @@ import { CategoryModule } from './category/category.module';
 import { UserModule } from './user/user.module';
 import { SupplierModule } from './supplier/supplier.module';
 import { ProductModule } from './product/product.module';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, CategoryModule, UserModule, SupplierModule, ProductModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, CategoryModule, UserModule, SupplierModule, ProductModule, CustomerModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
