@@ -32,7 +32,7 @@ export class CustomerService {
     }
     return customer;
   }
-s
+  s
   async update(id: number, updateCustomerDto: UpdateCustomerDto): Promise<Customer> {
     const customer = await this.findOne(id);
     if (!customer) {
@@ -51,5 +51,13 @@ s
 
   async remove(id: number): Promise<void> {
     await this.customerRepository.softDelete(id);
+  }
+
+  async search(term: string): Promise<Customer[]> {
+    return this.customerRepository
+      .createQueryBuilder('customer')
+      .where('customer.customerName LIKE :term', { term: `%${term}%` })
+      .orWhere('customer.identification LIKE :term', { term: `%${term}%` })
+      .getMany();
   }
 }

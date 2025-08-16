@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Put, Query } from '@nestjs/common';
 import { CustomerService } from './customer.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -23,6 +23,12 @@ export class CustomerController {
   @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN, RoleName.CONSULTANT)
   findAll() {
     return this.customerService.findAll();
+  }
+
+  @Get('search')
+  @UseGuards(AuthGuard('jwt'))
+  search(@Query('term') term: string) {
+    return this.customerService.search(term);
   }
 
   @Get(':id')
