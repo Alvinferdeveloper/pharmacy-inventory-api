@@ -2,9 +2,7 @@ import { Controller, Post, Body, UnauthorizedException, Get, UseGuards, Req, Res
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { Roles } from './decorators/roles.decorator';
-import { RoleName } from '../entities/Role.entity';
-import { RolesGuard } from './guards/roles.guard';
+
 import express from 'express';
 
 @Controller('auth')
@@ -32,8 +30,7 @@ export class AuthController {
   }
 
   @Get('profile')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(RoleName.ADMINISTRATOR)
+  @UseGuards(AuthGuard('jwt'))
   getProfile(@Req() req) {
     return req.user;
   }
