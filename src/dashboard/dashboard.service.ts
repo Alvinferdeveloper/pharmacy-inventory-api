@@ -93,6 +93,7 @@ export class DashboardService {
         stock: 'ASC',
       },
       take: 5,
+      relations: ['category'],
     });
 
     const recentInvoices = await this.invoiceRepository.find({
