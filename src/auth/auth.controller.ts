@@ -21,7 +21,7 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     const { access_token } = await this.authService.login(user);
-    res.cookie('jwt', access_token, { httpOnly: true });
+    res.cookie('jwt', access_token, { httpOnly: true, sameSite: 'lax', path: '/' });
     return { message: 'Login successful' };
   }
 
