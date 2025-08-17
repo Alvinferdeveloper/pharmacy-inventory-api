@@ -50,7 +50,8 @@ export class DashboardService {
       if (!acc[date]) {
         acc[date] = 0;
       }
-      acc[date] += invoice.total;
+      acc[date] += Number(invoice.total);
+      console.log(acc[date])
       return acc;
     }, {});
 
