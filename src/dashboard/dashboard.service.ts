@@ -51,10 +51,9 @@ export class DashboardService {
         acc[date] = 0;
       }
       acc[date] += Number(invoice.total);
-      console.log(acc[date])
       return acc;
     }, {});
-
+    
     return Object.entries(salesByDate).map(([date, total]) => ({ date, total }));
   }
 
