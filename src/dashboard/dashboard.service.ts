@@ -60,7 +60,8 @@ export class DashboardService {
   async getBestSellingProducts(): Promise<any[]> {
     return this.invoiceDetailRepository
       .createQueryBuilder('invoiceDetail')
-      .select('product.productName', 'productName')
+      .select('product.id_product', 'idProduct')
+      .addSelect('product.productName', 'productName')
       .addSelect('SUM(invoiceDetail.quantity)', 'totalQuantity')
       .innerJoin('invoiceDetail.product', 'product')
       .groupBy('product.idProduct')
