@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Product } from '../entities/Product.entity';
 import { REPOSITORIES } from '../constants';
@@ -22,12 +22,12 @@ export class ProductService {
   async create(createProductDto: CreateProductDto): Promise<Product> {
     const productExists = await this.productRepository.findOne({ where: { code: createProductDto.code } });
     if (productExists) {
-      throw new BadRequestException(`Product with code ${createProductDto.code} already exists`);
+      throw new ConflictException(`Product with code ${createProductDto.code} already exists`);
     }
     const category = await this.categoryRepository.findOne({ where: { idCategory: createProductDto.idCategory } });
     const supplier = await this.supplierRepository.findOne({ where: { idSupplier: createProductDto.idSupplier } });
     if (!category || !supplier) {
-      throw new BadRequestException(`Category or supplier not found`);
+      throw new NotFoundException(`Category or supplier not found`);
     }
     const product = this.productRepository.create({
       ...createProductDto,
@@ -55,9 +55,9 @@ export class ProductService {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
     if (updateProductDto.code && updateProductDto.code != product.code) {
-      const productByCode = await this.productRepository.find({ where: { code: updateProductDto.code } })
-      if (productByCode) {
-        throw new BadRequestException(`Product with code ${updateProductDto.code} already exists`);
+      const productByCode = await this.productRepository.findOne({ where: { code: updateProductDto.code } })
+      if (productByCode && productByCode?.idProduct != product.idProduct) {
+        throw new ConflictException(`Product with code ${updateProductDto.code} already exists`);
       }
     }
     const updateData: Partial<Product> = { ...updateProductDto };
@@ -68,7 +68,7 @@ export class ProductService {
         where: { idCategory: updateProductDto.idCategory },
       });
       if (!category) {
-        throw new BadRequestException(`Category with ID ${updateProductDto.idCategory} not found`);
+        throw new NotFoundException(`Category with ID ${updateProductDto.idCategory} not found`);
       }
       updateData.category = category;
     }
@@ -78,7 +78,7 @@ export class ProductService {
         where: { idSupplier: updateProductDto.idSupplier },
       });
       if (!supplier) {
-        throw new BadRequestException(`Supplier with ID ${updateProductDto.idSupplier} not found`);
+        throw new NotFoundException(`Supplier with ID ${updateProductDto.idSupplier} not found`);
       }
       updateData.supplier = supplier;
     }
