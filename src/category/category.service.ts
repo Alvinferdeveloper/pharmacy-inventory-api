@@ -38,6 +38,12 @@ export class CategoryService {
     if (!category) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
+    if (updateCategoryDto.categoryName && updateCategoryDto.categoryName != category.categoryName) {
+      const categoryExists = await this.categoryRepository.findOne({ where: { categoryName: updateCategoryDto.categoryName } });
+      if (categoryExists) {
+        throw new ConflictException(`Category with name ${updateCategoryDto.categoryName} already exists`);
+      }
+    }
     category = this.categoryRepository.merge(category, updateCategoryDto);
     return this.categoryRepository.save(category);
   }
