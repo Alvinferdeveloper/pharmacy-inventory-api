@@ -36,6 +36,6 @@ export class SupplierService {
   }
 
   async remove(id: number): Promise<void> {
-    await this.supplierRepository.delete(id);
+    await this.supplierRepository.softDelete(id);
   }
 }
