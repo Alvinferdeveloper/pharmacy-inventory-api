@@ -5,6 +5,7 @@ import { REPOSITORIES } from '../constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from '../entities/Role.entity';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class UserService {
@@ -13,9 +14,9 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     @Inject(REPOSITORIES.ROLE)
     private readonly roleRepository: Repository<Role>,
-  ) {}
+  ) { }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<{ user: User; temporaryPassword?: string }> {
     const role = await this.roleRepository.findOne({ where: { idRole: createUserDto.roleId } });
     if (!role) {
       throw new BadRequestException(`Role with ID ${createUserDto.roleId} not found`);
@@ -25,8 +26,18 @@ export class UserService {
     if (user) {
       throw new BadRequestException(`User with username ${createUserDto.username} already exists`);
     }
-    const newUser = this.userRepository.create({ ...createUserDto, role });
-    return this.userRepository.save(newUser);
+
+    const temporaryPassword = randomBytes(8).toString('hex');
+
+    const newUser = this.userRepository.create({
+      ...createUserDto,
+      password: temporaryPassword,
+      role,
+      mustChangePassword: true,
+    });
+
+    const savedUser = await this.userRepository.save(newUser);
+    return { user: savedUser, temporaryPassword };
   }
 
   async findAll(): Promise<User[]> {
@@ -66,6 +77,7 @@ export class UserService {
     }
     if (updateUserDto.password !== undefined) {
       user.password = updateUserDto.password; // BeforeInsert hook will hash this
+      user.mustChangePassword = false;
     }
 
     return this.userRepository.save(user);

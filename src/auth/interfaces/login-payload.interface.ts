@@ -4,4 +4,5 @@ export interface LoginPayload {
     username: string;
     sub: number;
     roles: RoleName[];
+    mustChangePassword?: boolean;
 }

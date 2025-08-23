@@ -17,6 +17,9 @@ export class User {
     @Column()
     password: string;
 
+    @Column({ default: true, name: 'must_change_password' })
+    mustChangePassword: boolean;
+
     @ManyToOne(() => Role, role => role.users)
     @JoinColumn({ name: 'id_role' })
     role: Role;

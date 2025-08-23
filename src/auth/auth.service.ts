@@ -5,7 +5,6 @@ import { User } from '../entities/User.entity';
 import { REPOSITORIES } from '../constants';
 import * as bcrypt from 'bcrypt';
 import { LoginPayload } from './interfaces/login-payload.interface';
-import { RoleName } from '../entities/Role.entity';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +12,7 @@ export class AuthService {
     @Inject(REPOSITORIES.USER)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.userRepository.findOne({
@@ -22,7 +21,7 @@ export class AuthService {
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
-      return result;
+      return { ...result, mustChangePassword: user.mustChangePassword };
     }
     return null;
   }
@@ -32,6 +31,7 @@ export class AuthService {
       username: user.username,
       sub: user.idUser,
       roles: [user.role.roleName],
+      mustChangePassword: user.mustChangePassword,
     };
     return {
       access_token: this.jwtService.sign(payload),
