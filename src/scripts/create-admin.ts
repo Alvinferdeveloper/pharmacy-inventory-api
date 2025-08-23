@@ -54,7 +54,7 @@ async function createAdminUser() {
     }
 
     // Check if admin user already exists
-    const existingAdmin = await userRepository.findOne({ where: { username: 'admin' } });
+    const existingAdmin = await userRepository.findOne({ where: { identification: 'admin' } });
     if (existingAdmin) {
       console.log('Admin user already exists. Exiting.');
       await dataSource.destroy();
@@ -64,7 +64,9 @@ async function createAdminUser() {
     // Create admin user
     const adminUser = userRepository.create({
       name: 'Administrator',
-      username: 'admin',
+      identification: '888-200402-1000P',
+      phone: '83281195',
+      email: 'admin@admin.com',
       password: '12345678', // This will be hashed by the BeforeInsert hook
       role: adminRole,
     });

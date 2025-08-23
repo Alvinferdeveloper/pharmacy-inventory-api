@@ -16,7 +16,7 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: { username },
+      where: { identification: username },
       relations: ['role'],
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
@@ -28,7 +28,7 @@ export class AuthService {
 
   async login(user: User) {
     const payload: LoginPayload = {
-      username: user.username,
+      username: user.identification,
       sub: user.idUser,
       roles: [user.role.roleName],
       mustChangePassword: user.mustChangePassword,

@@ -12,7 +12,13 @@ export class User {
     name: string;
 
     @Column({ unique: true })
-    username: string;
+    identification: string;
+
+    @Column()
+    phone: string;
+
+    @Column({ nullable: true })
+    email: string;
 
     @Column()
     password: string;

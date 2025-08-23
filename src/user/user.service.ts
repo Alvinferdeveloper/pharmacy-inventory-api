@@ -22,9 +22,9 @@ export class UserService {
       throw new BadRequestException(`Role with ID ${createUserDto.roleId} not found`);
     }
 
-    const user = await this.userRepository.findOne({ where: { username: createUserDto.username } });
+    const user = await this.userRepository.findOne({ where: { identification: createUserDto.identification } });
     if (user) {
-      throw new BadRequestException(`User with username ${createUserDto.username} already exists`);
+      throw new BadRequestException(`User with identification ${createUserDto.identification} already exists`);
     }
 
     const temporaryPassword = randomBytes(8).toString('hex');
@@ -55,9 +55,9 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findOne(id);
 
-    const userByUsername = await this.userRepository.findOne({ where: { username: updateUserDto.username } });
-    if (userByUsername && userByUsername.idUser !== id) {
-      throw new BadRequestException(`User with username ${updateUserDto.username} already exists`);
+    const userByIdentification = await this.userRepository.findOne({ where: { identification: updateUserDto.identification } });
+    if (userByIdentification && userByIdentification.idUser !== id) {
+      throw new BadRequestException(`User with identification ${updateUserDto.identification} already exists`);
     }
 
     if (updateUserDto.roleId) {
@@ -72,8 +72,14 @@ export class UserService {
     if (updateUserDto.name !== undefined) {
       user.name = updateUserDto.name;
     }
-    if (updateUserDto.username !== undefined) {
-      user.username = updateUserDto.username;
+    if (updateUserDto.identification !== undefined) {
+      user.identification = updateUserDto.identification;
+    }
+    if (updateUserDto.phone !== undefined) {
+      user.phone = updateUserDto.phone;
+    }
+    if (updateUserDto.email !== undefined) {
+      user.email = updateUserDto.email;
     }
     if (updateUserDto.password !== undefined) {
       user.password = updateUserDto.password; // BeforeInsert hook will hash this

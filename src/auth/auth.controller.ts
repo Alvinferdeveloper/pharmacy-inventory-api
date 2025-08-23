@@ -7,12 +7,12 @@ import express from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: express.Response) {
     const user = await this.authService.validateUser(
-      loginDto.username,
+      loginDto.identification,
       loginDto.password,
     );
     if (!user) {

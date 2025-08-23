@@ -9,7 +9,16 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
-  username!: string;
+  identification!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(20)
+  phone!: string;
+
+  @IsString()
+  @MaxLength(100)
+  email?: string;
 
   @IsNumber()
   @IsNotEmpty()
