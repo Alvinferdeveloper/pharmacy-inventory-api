@@ -1,7 +1,7 @@
 import { RoleName } from "../../entities/Role.entity";
 
 export interface LoginPayload {
-    username: string;
+    identification: string;
     sub: number;
     roles: RoleName[];
     mustChangePassword?: boolean;
