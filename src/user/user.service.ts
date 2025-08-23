@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../entities/User.entity';
 import { REPOSITORIES } from '../constants';
@@ -19,12 +19,12 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<{ user: User; temporaryPassword?: string }> {
     const role = await this.roleRepository.findOne({ where: { idRole: createUserDto.roleId } });
     if (!role) {
-      throw new BadRequestException(`Role with ID ${createUserDto.roleId} not found`);
+      throw new NotFoundException(`Role with ID ${createUserDto.roleId} not found`);
     }
 
     const user = await this.userRepository.findOne({ where: { identification: createUserDto.identification } });
     if (user) {
-      throw new BadRequestException(`User with identification ${createUserDto.identification} already exists`);
+      throw new ConflictException(`User with identification ${createUserDto.identification} already exists`);
     }
 
     const temporaryPassword = randomBytes(8).toString('hex');
@@ -57,13 +57,13 @@ export class UserService {
 
     const userByIdentification = await this.userRepository.findOne({ where: { identification: updateUserDto.identification } });
     if (userByIdentification && userByIdentification.idUser !== id) {
-      throw new BadRequestException(`User with identification ${updateUserDto.identification} already exists`);
+      throw new ConflictException(`User with identification ${updateUserDto.identification} already exists`);
     }
 
     if (updateUserDto.roleId) {
       const role = await this.roleRepository.findOne({ where: { idRole: updateUserDto.roleId } });
       if (!role) {
-        throw new BadRequestException(`Role with ID ${updateUserDto.roleId} not found`);
+        throw new NotFoundException(`Role with ID ${updateUserDto.roleId} not found`);
       }
       user.role = role;
     }
