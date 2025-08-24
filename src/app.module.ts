@@ -12,9 +12,21 @@ import { CustomerModule } from './customer/customer.module';
 import { InvoiceModule } from './invoice/invoice.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { RolesModule } from './roles/roles.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, AuthModule, CategoryModule, UserModule, SupplierModule, ProductModule, CustomerModule, InvoiceModule, DashboardModule, RolesModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
+    AuthModule,
+    CategoryModule,
+    UserModule,
+    SupplierModule,
+    ProductModule,
+    CustomerModule,
+    InvoiceModule,
+    DashboardModule,
+    RolesModule,
+    ReportsModule],
   controllers: [AppController],
   providers: [AppService],
 })
