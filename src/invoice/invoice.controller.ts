@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Get, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -20,8 +20,8 @@ export class InvoiceController {
   @Get()
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN, RoleName.CONSULTANT)
-  findAll() {
-    return this.invoiceService.findAll();
+  findAll(@Query('date') date?: string) {
+    return this.invoiceService.findAll(date);
   }
 
   @Get(':id')

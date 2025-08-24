@@ -1,5 +1,5 @@
 import { Injectable, Inject, ConflictException, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, Between } from 'typeorm';
 import { Invoice } from '../entities/Invoice.entity';
 import { InvoiceDetail } from '../entities/InvoiceDetail.entity';
 import { InventoryMovement, MovementType } from '../entities/InventoryMovement.entity';
@@ -103,7 +103,18 @@ export class InvoiceService {
     }
   }
 
-  findAll(): Promise<Invoice[]> {
+  findAll(date?: string): Promise<Invoice[]> {
+    if (date) {
+      const start = new Date(date);
+      start.setUTCHours(0, 0, 0, 0);
+      const end = new Date(date);
+      end.setUTCHours(23, 59, 59, 999);
+
+      return this.invoiceRepository.find({
+        where: { date: Between(start, end) },
+        relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
+      });
+    }
     return this.invoiceRepository.find({ relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'] });
   }
 
