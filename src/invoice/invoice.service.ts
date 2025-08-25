@@ -103,23 +103,27 @@ export class InvoiceService {
     }
   }
 
-  findAll(date?: string): Promise<Invoice[]> {
+  async findAll(date?: string): Promise<Invoice[]> {
+    const query = this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .withDeleted()
+      .leftJoinAndSelect('invoice.customer', 'customer')
+      .leftJoinAndSelect('invoice.user', 'user')
+      .leftJoinAndSelect('invoice.invoiceDetails', 'invoiceDetails')
+      .leftJoinAndSelect('invoiceDetails.product', 'product');
     if (date) {
       const start = new Date(date);
       start.setUTCHours(0, 0, 0, 0);
       const end = new Date(date);
       end.setUTCHours(23, 59, 59, 999);
 
-      return this.invoiceRepository.find({
-        where: { date: Between(start, end) },
-        relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
-      });
+      return query.where({ date: Between(start, end) }).getMany();
     }
-    return this.invoiceRepository.find({ relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'] });
+    return query.getMany();
   }
 
   async findOne(id: number): Promise<Invoice> {
-    const invoice = await this.invoiceRepository.findOne({ where: { idInvoice: id }, relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'] });
+    const invoice = await this.invoiceRepository.findOne({ where: { idInvoice: id }, relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'], withDeleted: true });
     if (!invoice) {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
     }

@@ -101,6 +101,7 @@ export class DashboardService {
       order: { date: 'DESC' },
       take: 5,
       relations: ['customer'],
+      withDeleted: true,
     });
 
     return {
