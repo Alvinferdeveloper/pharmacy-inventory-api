@@ -9,6 +9,7 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
+  @Matches(/^\d{3}-\d{6}-\d{4}[A-Z]$/, { message: 'La identificación debe tener el formato XXX-XXXXXX-XXXXX (ej. 888-200402-1000P)' })
   identification!: string;
 
   @IsString()
