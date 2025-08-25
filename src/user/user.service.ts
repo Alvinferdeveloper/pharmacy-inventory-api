@@ -41,11 +41,11 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userRepository.find({ relations: ['role'] });
+    return this.userRepository.find({ relations: ['role'], withDeleted: true });
   }
 
   async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { idUser: id }, relations: ['role'] });
+    const user = await this.userRepository.findOne({ where: { idUser: id }, relations: ['role'], withDeleted: true });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
@@ -89,15 +89,17 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async deactivate(id: number): Promise<void> {
+  async toggleStatus(id: number): Promise<User> {
     const user = await this.findOne(id);
-    await this.userRepository.softRemove(user);
-  }
 
-  async activate(id: number): Promise<void> {
-    const result = await this.userRepository.restore({ idUser: id });
-    if (!result.affected) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+    if (user.deletedAt) {
+      await this.userRepository.restore(id);
+      user.deletedAt = null;
+    } else {
+      await this.userRepository.softRemove(user);
+      user.deletedAt = new Date();
     }
+
+    return this.userRepository.save(user);
   }
 }

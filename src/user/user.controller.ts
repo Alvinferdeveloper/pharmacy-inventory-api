@@ -9,7 +9,7 @@ import { RoleName } from '../entities/Role.entity';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -39,17 +39,10 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
-  @Delete(':id')
+  @Put(':id/toggle-status')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleName.ADMINISTRATOR)
-  deactivate(@Param('id') id: string) {
-    return this.userService.deactivate(+id);
-  }
-
-  @Post(':id/activate')
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(RoleName.ADMINISTRATOR)
-  activate(@Param('id') id: string) {
-    return this.userService.activate(+id);
+  toggleStatus(@Param('id') id: string) {
+    return this.userService.toggleStatus(+id);
   }
 }

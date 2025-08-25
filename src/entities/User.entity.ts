@@ -39,5 +39,5 @@ export class User {
     }
 
     @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })
-    deletedAt: Date;
+    deletedAt: Date | null;
 }
