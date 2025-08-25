@@ -89,8 +89,15 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async remove(id: number): Promise<void> {
+  async deactivate(id: number): Promise<void> {
     const user = await this.findOne(id);
     await this.userRepository.softRemove(user);
+  }
+
+  async activate(id: number): Promise<void> {
+    const result = await this.userRepository.restore({ idUser: id });
+    if (!result.affected) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
   }
 }

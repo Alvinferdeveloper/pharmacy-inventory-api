@@ -18,7 +18,11 @@ export class AuthService {
     const user = await this.userRepository.findOne({
       where: { identification: username },
       relations: ['role'],
+      withDeleted: true,
     });
+    if (user && user.deletedAt) {
+      return null;
+    }
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
       return { ...result, mustChangePassword: user.mustChangePassword };

@@ -42,7 +42,14 @@ export class UserController {
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleName.ADMINISTRATOR)
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  deactivate(@Param('id') id: string) {
+    return this.userService.deactivate(+id);
+  }
+
+  @Post(':id/activate')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(RoleName.ADMINISTRATOR)
+  activate(@Param('id') id: string) {
+    return this.userService.activate(+id);
   }
 }
