@@ -13,6 +13,7 @@ import { InvoiceModule } from './invoice/invoice.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { RolesModule } from './roles/roles.module';
 import { ReportsModule } from './reports/reports.module';
+import { BackupRestoreModule } from './backup-restore/backup-restore.module';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -26,7 +27,8 @@ import { ReportsModule } from './reports/reports.module';
     InvoiceModule,
     DashboardModule,
     RolesModule,
-    ReportsModule],
+    ReportsModule,
+    BackupRestoreModule],
   controllers: [AppController],
   providers: [AppService],
 })
