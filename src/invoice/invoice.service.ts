@@ -121,9 +121,9 @@ export class InvoiceService {
       const end = new Date(date);
       end.setUTCHours(23, 59, 59, 999);
 
-      return query.where({ date: Between(start, end) }).getMany();
+      return query.where({ date: Between(start, end) }).orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
     }
-    return query.getMany();
+    return query.orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
   }
 
   async findOne(id: number): Promise<Invoice> {

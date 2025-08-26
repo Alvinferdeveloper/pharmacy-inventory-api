@@ -19,7 +19,7 @@ export class SupplierService {
   }
 
   async findAll(): Promise<Supplier[]> {
-    return this.supplierRepository.find();
+    return this.supplierRepository.find({ order: { idSupplier: "DESC" } });
   }
 
   async findOne(id: number): Promise<Supplier> {

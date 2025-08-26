@@ -22,7 +22,7 @@ export class CustomerService {
   }
 
   findAll(): Promise<Customer[]> {
-    return this.customerRepository.find({ withDeleted: true });
+    return this.customerRepository.find({ withDeleted: true, order: { idCustomer: 'DESC' } });
   }
 
   async findOne(id: number): Promise<Customer> {
