@@ -1,11 +1,14 @@
-import { Injectable, Inject, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { User } from '../entities/User.entity';
 import { REPOSITORIES } from '../constants';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { Role } from '../entities/Role.entity';
 import { randomBytes } from 'crypto';
+import * as bcrypt from 'bcrypt';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UserService {
@@ -89,6 +92,25 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
+  async updateProfile(id: number, updateProfileDto: UpdateProfileDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { idUser: id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (updateProfileDto.name !== undefined) {
+      user.name = updateProfileDto.name;
+    }
+    if (updateProfileDto.phone !== undefined) {
+      user.phone = updateProfileDto.phone;
+    }
+    if (updateProfileDto.email !== undefined) {
+      user.email = updateProfileDto.email;
+    }
+
+    return this.userRepository.save(user);
+  }
+
   async toggleStatus(id: number): Promise<User> {
     const user = await this.findOne(id);
 
@@ -101,5 +123,26 @@ export class UserService {
     }
 
     return this.userRepository.save(user);
+  }
+
+  async changePassword(id: number, changePasswordDto: ChangePasswordDto): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { idUser: id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const isPasswordValid = await bcrypt.compare(changePasswordDto.oldPassword, user.password);
+    if (!isPasswordValid) {
+      throw new BadRequestException('Contraseña actual incorrecta');
+    }
+
+    if (changePasswordDto.newPassword !== changePasswordDto.confirmNewPassword) {
+      throw new BadRequestException('Las nuevas contraseñas no coinciden');
+    }
+
+    user.password = await bcrypt.hash(changePasswordDto.newPassword, 10); // Explicitly hash the new password
+    user.mustChangePassword = false;
+
+    await this.userRepository.save(user);
   }
 }

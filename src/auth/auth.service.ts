@@ -14,9 +14,9 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) { }
 
-  async validateUser(username: string, pass: string): Promise<any> {
+  async validateUser(identification: string, pass: string): Promise<any> {
     const user = await this.userRepository.findOne({
-      where: { identification: username },
+      where: { identification },
       relations: ['role'],
       withDeleted: true,
     });
