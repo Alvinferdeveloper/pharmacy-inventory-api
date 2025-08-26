@@ -53,7 +53,7 @@ export class DashboardService {
       acc[date] += Number(invoice.total);
       return acc;
     }, {});
-    
+
     return Object.entries(salesByDate).map(([date, total]) => ({ date, total }));
   }
 
@@ -110,5 +110,19 @@ export class DashboardService {
       lowStockProducts,
       recentInvoices,
     };
+  }
+
+  async getSalesByCategory(): Promise<{ categoryName: string; total: number }[]> {
+    const salesByCategory = await this.invoiceDetailRepository
+      .createQueryBuilder('invoiceDetail')
+      .select('category.categoryName', 'categoryName')
+      .addSelect('SUM(invoiceDetail.subtotal)', 'total')
+      .innerJoin('invoiceDetail.product', 'product')
+      .innerJoin('product.category', 'category')
+      .groupBy('category.categoryName')
+      .orderBy('total', 'DESC')
+      .getRawMany();
+
+    return salesByCategory.map(item => ({ ...item, total: Number(item.total) }));
   }
 }

@@ -10,7 +10,7 @@ import { RoleName } from '../entities/Role.entity';
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(RoleName.ADMINISTRATOR, RoleName.CONSULTANT)
 export class DashboardController {
-  constructor(private readonly dashboardService: DashboardService) {}
+  constructor(private readonly dashboardService: DashboardService) { }
 
   @Get('sales-over-time')
   getSalesOverTime(@Query('period') period: string) {
@@ -25,5 +25,10 @@ export class DashboardController {
   @Get('dashboard-stats')
   getDashboardStats() {
     return this.dashboardService.getDashboardStats();
+  }
+
+  @Get('sales-by-category')
+  getSalesByCategory() {
+    return this.dashboardService.getSalesByCategory();
   }
 }
