@@ -22,11 +22,11 @@ export class CustomerService {
   }
 
   findAll(): Promise<Customer[]> {
-    return this.customerRepository.find();
+    return this.customerRepository.find({ withDeleted: true });
   }
 
   async findOne(id: number): Promise<Customer> {
-    const customer = await this.customerRepository.findOne({ where: { idCustomer: id } });
+    const customer = await this.customerRepository.findOne({ where: { idCustomer: id }, withDeleted: true });
     if (!customer) {
       throw new ConflictException('Customer not found');
     }
@@ -49,8 +49,13 @@ export class CustomerService {
     return this.customerRepository.save(customer);
   }
 
-  async remove(id: number): Promise<void> {
-    await this.customerRepository.softDelete(id);
+  async toggleStatus(id: number): Promise<void> {
+    const customer = await this.findOne(id);
+    if (customer.deletedAt) {
+      await this.customerRepository.restore(id);
+    } else {
+      await this.customerRepository.softDelete(id);
+    }
   }
 
   async search(term: string): Promise<Customer[]> {

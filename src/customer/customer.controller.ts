@@ -45,10 +45,10 @@ export class CustomerController {
     return this.customerService.update(+id, updateCustomerDto);
   }
 
-  @Delete(':id')
+  @Put(':id/toggle-status')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN)
-  remove(@Param('id') id: string) {
-    return this.customerService.remove(+id);
+  toggleStatus(@Param('id') id: string) {
+    return this.customerService.toggleStatus(+id);
   }
 }

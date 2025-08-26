@@ -7,6 +7,7 @@ import { Product } from '../entities/Product.entity';
 import { Customer } from '../entities/Customer.entity';
 import { User } from '../entities/User.entity';
 import { REPOSITORIES, DATA_SOURCE } from '../constants';
+import { BadRequestException } from '@nestjs/common';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 
 @Injectable()
@@ -39,6 +40,9 @@ export class InvoiceService {
       const customer = await this.customerRepository.findOne({ where: { idCustomer: customerId } });
       if (!customer) {
         throw new NotFoundException('Customer not found');
+      }
+      if (customer.deletedAt) {
+        throw new BadRequestException('Cannot create an invoice for an inactive customer');
       }
 
       const user = await this.userRepository.findOne({ where: { idUser: userId } });
