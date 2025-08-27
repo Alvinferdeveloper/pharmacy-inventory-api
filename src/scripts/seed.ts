@@ -53,7 +53,7 @@ async function seedData() {
         phone: '8888-8888',
         email: 'miguel@example.com',
         password: 'password123', // Será hasheada por el hook BeforeInsert
-        role: roles[0], // ADMINISTRATOR
+        role: roles[2], // ADMINISTRATOR
         mustChangePassword: false,
       },
       {

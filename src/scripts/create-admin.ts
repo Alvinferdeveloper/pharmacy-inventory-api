@@ -62,9 +62,9 @@ async function createAdminUser() {
 
     // Create admin user
     const adminUser = userRepository.create({
-      name: 'Administrator',
-      identification: '888-200402-1000P',
-      phone: '83281194',
+      name: 'Eddy Urbina Obando',
+      identification: '777-250700-1100P',
+      phone: '77675646',
       email: 'admin@admin.com',
       password: '12345678', // This will be hashed by the BeforeInsert hook
       role: adminRole,
