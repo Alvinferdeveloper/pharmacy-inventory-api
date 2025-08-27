@@ -25,6 +25,7 @@ export class InventoryMovementsService {
       where,
       relations: ['product'],
       order: { date: 'DESC' },
+      withDeleted: true,
     });
   }
 }
