@@ -15,6 +15,7 @@ import { RolesModule } from './roles/roles.module';
 import { ReportsModule } from './reports/reports.module';
 import { BackupRestoreModule } from './backup-restore/backup-restore.module';
 import { InventoryMovementsModule } from './inventory-movements/inventory-movements.module';
+import { AlertsModule } from './alerts/alerts.module';
 
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }),
@@ -30,7 +31,8 @@ import { InventoryMovementsModule } from './inventory-movements/inventory-moveme
     RolesModule,
     ReportsModule,
     BackupRestoreModule,
-    InventoryMovementsModule],
+    InventoryMovementsModule,
+    AlertsModule],
   controllers: [AppController],
   providers: [AppService],
 })
