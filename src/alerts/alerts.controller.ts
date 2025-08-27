@@ -15,4 +15,9 @@ export class AlertsController {
   getLowStockProducts() {
     return this.alertsService.getLowStockProducts();
   }
+
+  @Get('expiring-products')
+  getExpiringProducts() {
+    return this.alertsService.getExpiringProducts();
+  }
 }

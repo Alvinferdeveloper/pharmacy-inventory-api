@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Repository, LessThanOrEqual } from 'typeorm';
+import { Repository, LessThanOrEqual, Between } from 'typeorm';
 import { Product } from '../entities/Product.entity';
 import { REPOSITORIES } from '../constants';
 
@@ -17,6 +17,21 @@ export class AlertsService {
       },
       order: {
         stock: 'ASC',
+      },
+    });
+  }
+
+  async getExpiringProducts(days = 30): Promise<Product[]> {
+    const today = new Date();
+    const expirationDate = new Date();
+    expirationDate.setDate(today.getDate() + days);
+
+    return this.productRepository.find({
+      where: {
+        expirationDate: Between(today, expirationDate),
+      },
+      order: {
+        expirationDate: 'ASC',
       },
     });
   }
