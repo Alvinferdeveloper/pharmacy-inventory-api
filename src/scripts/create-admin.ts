@@ -1,5 +1,4 @@
 import { DataSource } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { User } from '../entities/User.entity';
 import { Role, RoleName } from '../entities/Role.entity';
 import { Category } from '../entities/Category.entity';
@@ -9,16 +8,16 @@ import { Invoice } from '../entities/Invoice.entity';
 import { InventoryMovement } from '../entities/InventoryMovement.entity';
 import { Product } from '../entities/Product.entity';
 import { Supplier } from '../entities/Supplier.entity';
-
+import 'dotenv/config';
 
 async function createAdminUser() {
   const dataSource = new DataSource({
     type: 'mysql',
-    host: 'localhost',
-    port: 3306,
-    username: 'root',
-    password: '1234',
-    database: 'pharmacy_inventory',
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
     entities: [
       User,
       Role,
@@ -65,7 +64,7 @@ async function createAdminUser() {
     const adminUser = userRepository.create({
       name: 'Administrator',
       identification: '888-200402-1000P',
-      phone: '83281195',
+      phone: '83281194',
       email: 'admin@admin.com',
       password: '12345678', // This will be hashed by the BeforeInsert hook
       role: adminRole,
