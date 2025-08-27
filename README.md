@@ -89,3 +89,18 @@ para loguearte por primera vez y tener maximos privilegios deberas usar la ident
     pnpm run build
     pnpm run start:prod
     ```
+
+### Run using docker compose
+
+```bash
+docker compose up --build
+```
+
+Se debe de tener encuenta que la ruta al frontend debe ser **../pharmacy-inventory** para que se ejecute correctamente
+
+Si es la primera vez que se ejecuta el docker compose, se debe de ejecutar el siguiente comando desde la linea de comandos donde se encuentra el archivo docker-compose.yml para crear la base de datos y poblarla:
+
+```bash
+docker compose exec backend npm run seed
+```
+
