@@ -10,11 +10,11 @@ export class InventoryMovementsService {
     private readonly inventoryMovementRepository: Repository<InventoryMovement>,
   ) { }
 
-  async findAll(productId?: number, startDate?: string, endDate?: string): Promise<InventoryMovement[]> {
+  async findAll(productCode?: string, startDate?: string, endDate?: string): Promise<InventoryMovement[]> {
     const where: any = {};
 
-    if (productId) {
-      where.product = { idProduct: productId };
+    if (productCode) {
+      where.product = { code: productCode };
     }
 
     if (startDate && endDate) {

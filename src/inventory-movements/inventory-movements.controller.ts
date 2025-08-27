@@ -13,10 +13,10 @@ export class InventoryMovementsController {
 
   @Get()
   findAll(
-    @Query('productId') productId?: number,
+    @Query('productCode') productCode?: string,
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
   ) {
-    return this.inventoryMovementsService.findAll(productId, startDate, endDate);
+    return this.inventoryMovementsService.findAll(productCode, startDate, endDate);
   }
 }
