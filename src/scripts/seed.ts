@@ -8,6 +8,7 @@ import { InvoiceDetail } from '../entities/InvoiceDetail.entity';
 import { InventoryMovement } from '../entities/InventoryMovement.entity';
 import { Product } from '../entities/Product.entity';
 import { Supplier } from '../entities/Supplier.entity';
+import 'dotenv/config';
 
 async function seedData() {
   const dataSource = new DataSource({
