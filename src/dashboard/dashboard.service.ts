@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Repository, MoreThanOrEqual } from 'typeorm';
+import { Repository, MoreThanOrEqual, LessThanOrEqual } from 'typeorm';
 import { Invoice } from '../entities/Invoice.entity';
 import { Product } from '../entities/Product.entity';
 import { InvoiceDetail } from '../entities/InvoiceDetail.entity';
@@ -88,7 +88,7 @@ export class DashboardService {
 
     const lowStockProducts = await this.productRepository.find({
       where: {
-        stock: MoreThanOrEqual(0),
+        stock: LessThanOrEqual(10),
       },
       order: {
         stock: 'ASC',
