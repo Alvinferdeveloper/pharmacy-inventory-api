@@ -7,7 +7,7 @@ import { RoleName } from '../entities/Role.entity';
 
 @Controller('inventory-movements')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@Roles(RoleName.ADMINISTRATOR, RoleName.CONSULTANT)
+@Roles(RoleName.ADMINISTRATOR, RoleName.CONSULTANT, RoleName.SALESMAN)
 export class InventoryMovementsController {
   constructor(private readonly inventoryMovementsService: InventoryMovementsService) { }
 
