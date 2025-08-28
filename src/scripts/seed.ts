@@ -95,6 +95,9 @@ async function seedData() {
       { customerName: 'Maria Rodriguez', identification: '001-150788-0003C', phone: '8666-6666', address: 'Managua' },
       { customerName: 'Carlos Lopez', identification: '281-200495-0004D', phone: '8555-5555', address: 'Masaya' },
       { customerName: 'Ana Martinez', identification: '043-051180-0005E', phone: '8444-4444', address: 'Granada' },
+      { customerName: 'Juan Perez', identification: '001-020292-0002B', phone: '8777-7777', address: 'Masaya' },
+      { customerName: 'Pedro Ramirez', identification: '001-030393-0003C', phone: '8666-6666', address: 'Managua' },
+
     ];
     const createdCustomers = await customerRepository.save(customers);
     console.log('Clientes sembrados.');
@@ -112,7 +115,7 @@ async function seedData() {
 
     // Seed Invoices
     const invoices: DeepPartial<Invoice>[] = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 5; i++) {
       const invoiceDetails: DeepPartial<InvoiceDetail>[] = [];
       let total = 0;
 
@@ -142,6 +145,15 @@ async function seedData() {
         });
       }
 
+      function randomDateLastMonth() {
+        const end = new Date(); // hoy
+        const start = new Date();
+        start.setDate(start.getDate() - 30); // hace 30 días
+
+        const randomTime = start.getTime() + Math.random() * (end.getTime() - start.getTime());
+        return new Date(randomTime);
+      }
+
       const invoice = {
         customer: createdCustomers[i],
         user: createdUsers[1], // Vendedor Juan Pérez
@@ -149,6 +161,7 @@ async function seedData() {
         tax: total * 0.15, // 15% IVA
         discount: 0,
         invoiceDetails,
+        date: randomDateLastMonth(),
       };
       invoices.push(invoice);
     }
