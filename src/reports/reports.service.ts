@@ -26,25 +26,24 @@ export class ReportsService {
     private readonly supplierRepository: Repository<Supplier>,
   ) { }
 
-  async getSalesReportByDateRange(startDate: Date, endDate: Date): Promise<Invoice[]> {
-    const adjustedEndDate = new Date(endDate);
-    adjustedEndDate.setUTCHours(23, 59, 59, 999);
+  async getSalesReportByDateRange(startDate: string, endDate: string): Promise<Invoice[]> {
+    const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+    const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
 
-    const startUTC = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
-    const endUTC = new Date(adjustedEndDate.getTime() - adjustedEndDate.getTimezoneOffset() * 60000);
+    const localStart = new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0);
+    const localEnd = new Date(endYear, endMonth - 1, endDay, 23, 59, 59, 999);
 
-    console.log(startUTC, endUTC)
-
+    console.log(localStart, localEnd)
     console.log(await this.invoiceRepository.find({
       where: {
-        date: Between(startUTC, endUTC),
+        date: Between(localStart, localEnd),
       },
       relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
     }))
 
     return this.invoiceRepository.find({
       where: {
-        date: Between(startUTC, endUTC),
+        date: Between(localStart, localEnd),
       },
       relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
     });

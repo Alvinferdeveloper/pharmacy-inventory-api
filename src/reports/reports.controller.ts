@@ -20,8 +20,8 @@ export class ReportsController {
     @Res() res: express.Response,
   ) {
     const sales = await this.reportsService.getSalesReportByDateRange(
-      new Date(startDate),
-      new Date(endDate),
+      startDate,
+      endDate,
     );
 
     if (exportType === 'excel') {
