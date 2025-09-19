@@ -110,18 +110,20 @@ export class InvoiceService {
   async findAll(date?: string): Promise<Invoice[]> {
     const query = this.invoiceRepository
       .createQueryBuilder('invoice')
-      .withDeleted()
       .leftJoinAndSelect('invoice.customer', 'customer')
       .leftJoinAndSelect('invoice.user', 'user')
       .leftJoinAndSelect('invoice.invoiceDetails', 'invoiceDetails')
       .leftJoinAndSelect('invoiceDetails.product', 'product');
     if (date) {
-      const start = new Date(date);
-      start.setUTCHours(0, 0, 0, 0);
-      const end = new Date(date);
-      end.setUTCHours(23, 59, 59, 999);
+      const localStart = new Date(date);
+      localStart.setHours(0, 0, 0, 0);
+      const localEnd = new Date(date);
+      localEnd.setHours(23, 59, 59, 999);
 
-      return query.where({ date: Between(start, end) }).orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
+      const startUTC = new Date(localStart.getTime() - localStart.getTimezoneOffset() * 60000);
+      const endUTC = new Date(localEnd.getTime() - localEnd.getTimezoneOffset() * 60000);
+
+      return query.where({ date: Between(startUTC, endUTC) }).orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
     }
     return query.orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
   }
