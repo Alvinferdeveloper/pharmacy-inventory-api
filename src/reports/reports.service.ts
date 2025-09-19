@@ -27,9 +27,24 @@ export class ReportsService {
   ) { }
 
   async getSalesReportByDateRange(startDate: Date, endDate: Date): Promise<Invoice[]> {
+    const adjustedEndDate = new Date(endDate);
+    adjustedEndDate.setUTCHours(23, 59, 59, 999);
+
+    const startUTC = new Date(startDate.getTime() - startDate.getTimezoneOffset() * 60000);
+    const endUTC = new Date(adjustedEndDate.getTime() - adjustedEndDate.getTimezoneOffset() * 60000);
+
+    console.log(startUTC, endUTC)
+
+    console.log(await this.invoiceRepository.find({
+      where: {
+        date: Between(startUTC, endUTC),
+      },
+      relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
+    }))
+
     return this.invoiceRepository.find({
       where: {
-        date: Between(startDate, endDate),
+        date: Between(startUTC, endUTC),
       },
       relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
     });
