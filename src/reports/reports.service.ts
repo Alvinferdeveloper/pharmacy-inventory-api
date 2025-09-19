@@ -33,14 +33,6 @@ export class ReportsService {
     const localStart = new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0);
     const localEnd = new Date(endYear, endMonth - 1, endDay, 23, 59, 59, 999);
 
-    console.log(localStart, localEnd)
-    console.log(await this.invoiceRepository.find({
-      where: {
-        date: Between(localStart, localEnd),
-      },
-      relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
-    }))
-
     return this.invoiceRepository.find({
       where: {
         date: Between(localStart, localEnd),
