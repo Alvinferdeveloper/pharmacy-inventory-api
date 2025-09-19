@@ -28,7 +28,7 @@ export class Invoice {
     @Column('decimal', { precision: 10, scale: 2 })
     discount: number;
 
-    @OneToMany(() => InvoiceDetail, invoiceDetail => invoiceDetail.invoice)
+    @OneToMany(() => InvoiceDetail, invoiceDetail => invoiceDetail.invoice, { cascade: true })
     invoiceDetails: InvoiceDetail[];
 
     @DeleteDateColumn({ name: 'deleted_at', type: 'timestamp', nullable: true })

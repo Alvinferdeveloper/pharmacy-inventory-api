@@ -165,7 +165,7 @@ async function seedData() {
       };
       invoices.push(invoice);
     }
-    const createdInvoices = await invoiceRepository.save(invoices);
+    await invoiceRepository.save(invoices);
     console.log('Facturas sembradas.');
 
     console.log('¡Sembrado de datos completado!');
