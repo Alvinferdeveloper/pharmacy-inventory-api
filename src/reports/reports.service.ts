@@ -64,7 +64,10 @@ export class ReportsService {
   }
 
   async getSalesByCustomerReport(customerIdentification: string): Promise<Invoice[]> {
-    const customer = await this.customerRepository.findOne({ where: { identification: customerIdentification } });
+    if(!customerIdentification){
+      return [];
+    }
+    const customer = await this.customerRepository.findOneOrFail({ where: { identification: customerIdentification } });
     if (!customer) {
       return [];
     }
