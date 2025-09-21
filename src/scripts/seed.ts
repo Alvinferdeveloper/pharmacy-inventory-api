@@ -5,7 +5,7 @@ import { Category } from '../entities/Category.entity';
 import { Customer } from '../entities/Customer.entity';
 import { Invoice } from '../entities/Invoice.entity';
 import { InvoiceDetail } from '../entities/InvoiceDetail.entity';
-import { InventoryMovement } from '../entities/InventoryMovement.entity';
+import { InventoryMovement, MovementType } from '../entities/InventoryMovement.entity';
 import { Product } from '../entities/Product.entity';
 import { Supplier } from '../entities/Supplier.entity';
 import 'dotenv/config';
@@ -113,8 +113,21 @@ async function seedData() {
     const createdProducts = await productRepository.save(products);
     console.log('Productos sembrados.');
 
-    // Seed Invoices
-    const invoices: DeepPartial<Invoice>[] = [];
+    // Seed Initial Inventory Movements
+    const initialMovements: DeepPartial<InventoryMovement>[] = [];
+    for (const product of createdProducts) {
+      initialMovements.push({
+        product: product,
+        movementType: MovementType.IN,
+        quantity: product.stock,
+        reason: 'Stock Inicial',
+      });
+    }
+    await inventoryMovementRepository.save(initialMovements);
+    console.log('Movimientos de inventario iniciales sembrados.');
+
+    // Seed Invoices and Sale Movements
+    const saleMovements: DeepPartial<InventoryMovement>[] = [];
     for (let i = 0; i < 5; i++) {
       const invoiceDetails: DeepPartial<InvoiceDetail>[] = [];
       let total = 0;
@@ -154,7 +167,7 @@ async function seedData() {
         return new Date(randomTime);
       }
 
-      const invoice = {
+      const invoiceData = {
         customer: createdCustomers[i],
         user: createdUsers[1], // Vendedor Juan Pérez
         total: total,
@@ -163,10 +176,20 @@ async function seedData() {
         invoiceDetails,
         date: randomDateLastMonth(),
       };
-      invoices.push(invoice);
+
+      const createdInvoice = await invoiceRepository.save(invoiceData);
+
+      for (const detail of createdInvoice.invoiceDetails) {
+        saleMovements.push({
+          product: detail.product,
+          movementType: MovementType.OUT,
+          quantity: detail.quantity,
+          reason: `Venta en factura #${createdInvoice.idInvoice}`,
+        });
+      }
     }
-    await invoiceRepository.save(invoices);
-    console.log('Facturas sembradas.');
+    await inventoryMovementRepository.save(saleMovements);
+    console.log('Facturas y movimientos de venta sembrados.');
 
     console.log('¡Sembrado de datos completado!');
 
