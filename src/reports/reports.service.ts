@@ -67,7 +67,7 @@ export class ReportsService {
     if(!customerIdentification){
       return [];
     }
-    const customer = await this.customerRepository.findOneOrFail({ where: { identification: customerIdentification } });
+    const customer = await this.customerRepository.findOne({ where: { identification: customerIdentification } });
     if (!customer) {
       return [];
     }
