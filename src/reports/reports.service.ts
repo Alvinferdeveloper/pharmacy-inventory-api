@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Between, Repository } from 'typeorm';
+import { Between, ILike, Repository } from 'typeorm';
 import { Invoice } from '../entities/Invoice.entity';
 import { InvoiceDetail } from '../entities/InvoiceDetail.entity';
 import { Product } from '../entities/Product.entity';
@@ -155,7 +155,7 @@ export class ReportsService {
   }
 
   async getProductsBySupplierReport(supplierName: string): Promise<Product[]> {
-    const supplier = await this.supplierRepository.findOne({ where: { supplierName: supplierName } });
+    const supplier = await this.supplierRepository.findOne({ where: { supplierName: ILike(`%${supplierName}%`) } });
     if (!supplier) {
       return [];
     }
