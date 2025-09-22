@@ -13,8 +13,10 @@ export class BackupRestoreService {
     }
   }
 
-  async backup(): Promise<string> {
-    const fileName = `backup-${new Date().toISOString().replace(/:/g, '-')}.sql`;
+  async backup(description?: string): Promise<string> {
+    const timestamp = new Date().toISOString().replace(/:/g, '-');
+    const safeDescription = description ? `-${description.replace(/[^a-zA-Z0-9]/g, '_')}` : '';
+    const fileName = `backup-${timestamp}${safeDescription}.sql`;
     const filePath = path.join(this.backupDir, fileName);
 
     const command = `mysqldump -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_DATABASE} > ${filePath}`;
@@ -30,29 +32,45 @@ export class BackupRestoreService {
     });
   }
 
-  async getBackups(): Promise<string[]> {
+
+  async restore(file: Express.Multer.File): Promise<void> {
+    const tempFileName = `restore-${Date.now()}.sql`;
+    const tempFilePath = path.join(this.backupDir, tempFileName);
+
     return new Promise((resolve, reject) => {
-      fs.readdir(this.backupDir, (err, files) => {
+      fs.writeFile(tempFilePath, file.buffer, (err) => {
         if (err) {
-          reject('Unable to scan backup directory');
-        } else {
-          resolve(files);
+          return reject(`Failed to write temporary restore file: ${err.message}`);
         }
+
+        const command = `mysql -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_DATABASE} < ${tempFilePath}`;
+
+        exec(command, (error, stdout, stderr) => {
+          // Clean up the temporary file first
+          fs.unlink(tempFilePath, (unlinkErr) => {
+            if (unlinkErr) {
+              console.error(`Failed to delete temporary restore file: ${tempFilePath}`, unlinkErr);
+              // Do not reject here, as the main operation might have succeeded.
+              // The primary error (if any) is more important.
+            }
+
+            if (error) {
+              return reject(`Error restoring from backup: ${stderr}`);
+            }
+            resolve();
+          });
+        });
       });
     });
   }
 
-  async restore(fileName: string): Promise<void> {
-    const filePath = path.join(this.backupDir, fileName);
-    const command = `mysql -u ${process.env.DB_USERNAME} -p${process.env.DB_PASSWORD} ${process.env.DB_DATABASE} < ${filePath}`;
-
+  async cleanupBackupFile(filePath: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      exec(command, (error, stdout, stderr) => {
-        if (error) {
-          reject(`Error restoring from backup: ${stderr}`);
-        } else {
-          resolve();
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(`Failed to delete backup file: ${filePath}`, err);
         }
+        resolve();
       });
     });
   }

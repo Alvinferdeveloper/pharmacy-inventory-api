@@ -9,6 +9,7 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
+    exposedHeaders: ['Content-Disposition'],
   });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe(
