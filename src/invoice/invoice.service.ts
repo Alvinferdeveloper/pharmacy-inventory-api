@@ -90,7 +90,7 @@ export class InvoiceService {
           product,
           quantity,
           movementType: MovementType.OUT,
-          reason: `Sale - Invoice #${savedInvoice.idInvoice}`,
+          reason: `Venta en factura #${savedInvoice.idInvoice}`,
         });
         await queryRunner.manager.save(inventoryMovement);
 
