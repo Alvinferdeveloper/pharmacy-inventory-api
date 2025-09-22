@@ -9,13 +9,13 @@ export class Customer {
     @Column({ name: 'customer_name' })
     customerName: string;
 
-    @Column({ unique: true })
+    @Column({ nullable: true })
     identification: string;
 
-    @Column()
+    @Column({ nullable: true })
     phone: string;
 
-    @Column()
+    @Column({ nullable: true })
     address: string;
 
     @OneToMany(() => Invoice, invoice => invoice.customer)
