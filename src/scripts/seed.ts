@@ -51,7 +51,7 @@ async function seedData() {
       {
         name: 'Miguel Herrera',
         identification: '001-010190-0001A',
-        phone: '8888-8888',
+        phone: '88888888',
         email: 'miguel@example.com',
         password: 'password123', // Será hasheada por el hook BeforeInsert
         role: roles[2], // ADMINISTRATOR
@@ -60,7 +60,7 @@ async function seedData() {
       {
         name: 'Juan Pérez',
         identification: '001-020292-0002B',
-        phone: '8777-7777',
+        phone: '87777777',
         email: 'juan.perez@example.com',
         password: 'password123',
         role: roles[1], // SALESMAN
@@ -92,11 +92,11 @@ async function seedData() {
 
     // Seed Customers
     const customers: DeepPartial<Customer>[] = [
-      { customerName: 'Maria Rodriguez', identification: '001-150788-0003C', phone: '8666-6666', address: 'Managua' },
-      { customerName: 'Carlos Lopez', identification: '281-200495-0004D', phone: '8555-5555', address: 'Masaya' },
-      { customerName: 'Ana Martinez', identification: '043-051180-0005E', phone: '8444-4444', address: 'Granada' },
-      { customerName: 'Juan Perez', identification: '001-020292-0002B', phone: '8777-7777', address: 'Masaya' },
-      { customerName: 'Pedro Ramirez', identification: '001-030393-0003C', phone: '8666-6666', address: 'Managua' },
+      { customerName: 'Maria Rodriguez', identification: '001-150788-0003C', phone: '86666666', address: 'Managua' },
+      { customerName: 'Carlos Lopez', identification: '281-200495-0004D', phone: '85555555', address: 'Masaya' },
+      { customerName: 'Ana Martinez', identification: '043-051180-0005E', phone: '84444444', address: 'Granada' },
+      { customerName: 'Juan Perez', identification: '001-020292-0002B', phone: '87777777', address: 'Masaya' },
+      { customerName: 'Pedro Ramirez', identification: '001-030393-0003C', phone: '86666666', address: 'Managua' },
 
     ];
     const createdCustomers = await customerRepository.save(customers);
