@@ -1,4 +1,4 @@
-import { Injectable, Inject, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, ConflictException, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { DataSource, Repository, Between } from 'typeorm';
 import { Invoice } from '../entities/Invoice.entity';
 import { InvoiceDetail } from '../entities/InvoiceDetail.entity';
@@ -6,6 +6,7 @@ import { InventoryMovement, MovementType } from '../entities/InventoryMovement.e
 import { Product } from '../entities/Product.entity';
 import { Customer } from '../entities/Customer.entity';
 import { User } from '../entities/User.entity';
+import { RoleName } from '../entities/Role.entity'; // Import RoleName
 import { REPOSITORIES, DATA_SOURCE } from '../constants';
 import { BadRequestException } from '@nestjs/common';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
@@ -116,12 +117,20 @@ export class InvoiceService {
       .leftJoinAndSelect('invoiceDetails.product', 'product');
     if (date) {
       const [year, month, day] = date.split('-').map(Number);
-      const localStart = new Date(year, month - 1, day, 0, 0, 0, 0); 
+      const localStart = new Date(year, month - 1, day, 0, 0, 0, 0);
       const localEnd = new Date(year, month - 1, day, 23, 59, 59, 999);
-      
+
       return query.where({ date: Between(localStart, localEnd) }).orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
     }
     return query.orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
+  }
+
+  async findMyInvoices(userId: number): Promise<Invoice[]> {
+    return this.invoiceRepository.find({
+      where: { user: { idUser: userId } },
+      relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
+      order: { idInvoice: 'DESC' },
+    });
   }
 
   async findOne(id: number): Promise<Invoice> {
@@ -132,7 +141,20 @@ export class InvoiceService {
     return invoice;
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, currentUser: Express.User): Promise<void> {
+    const invoice = await this.invoiceRepository.findOne({ where: { idInvoice: id }, relations: ['user'] });
+
+    if (!invoice) {
+      throw new NotFoundException(`Invoice with ID ${id} not found`);
+    }
+
+    const userIsAdmin = currentUser.roles.includes(RoleName.ADMINISTRATOR);
+    const userIsOwner = invoice.user.idUser === currentUser.idUser;
+
+    if (!userIsAdmin && !userIsOwner) {
+      throw new ForbiddenException('You are not authorized to delete this invoice.');
+    }
+
     await this.invoiceRepository.softDelete(id);
   }
 }

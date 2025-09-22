@@ -13,8 +13,15 @@ export class InvoiceController {
   @Post('purchase')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN)
-  create(@Body() createInvoiceDto: CreateInvoiceDto, @Req() req) {
+  create(@Body() createInvoiceDto: CreateInvoiceDto, @Req() req: Express.Request) {
     return this.invoiceService.create(createInvoiceDto, req.user.idUser);
+  }
+
+  @Get('my-invoices')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN)
+  findMyInvoices(@Req() req) {
+    return this.invoiceService.findMyInvoices(req.user.idUser);
   }
 
   @Get()
@@ -34,7 +41,7 @@ export class InvoiceController {
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.invoiceService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Req() req: Express.Request) {
+    return this.invoiceService.remove(id, req.user);
   }
 }
