@@ -15,11 +15,14 @@ export class AuthService {
   ) { }
 
   async validateUser(identification: string, pass: string): Promise<any> {
-    const user = await this.userRepository.findOne({
-      where: { identification },
-      relations: ['role'],
-      withDeleted: true,
-    });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .withDeleted()
+      .leftJoinAndSelect('user.role', 'role')
+      .where('user.deletedAt IS NULL')
+      .andWhere('user.identification = :identification', { identification })
+      .getOne();
+
     if (user && user.deletedAt) {
       return null;
     }
