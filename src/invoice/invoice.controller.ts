@@ -19,7 +19,7 @@ export class InvoiceController {
 
   @Get('my-invoices')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN)
+  @Roles(RoleName.ADMINISTRATOR, RoleName.SALESMAN, RoleName.CONSULTANT)
   findMyInvoices(@Req() req) {
     return this.invoiceService.findMyInvoices(req.user.idUser);
   }
