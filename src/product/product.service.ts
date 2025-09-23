@@ -38,7 +38,14 @@ export class ProductService {
   }
 
   async findAll(): Promise<Product[]> {
-    return this.productRepository.find({ relations: ['category', 'supplier'], withDeleted: true, order: { idProduct: "DESC" } });
+    return this.productRepository
+      .createQueryBuilder('product')
+      .withDeleted()
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.supplier', 'supplier')
+      .where('product.deletedAt IS NULL')
+      .orderBy('product.idProduct', 'DESC')
+      .getMany();
   }
 
   async findOne(id: number): Promise<Product> {

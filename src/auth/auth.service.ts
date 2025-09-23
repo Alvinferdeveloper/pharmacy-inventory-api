@@ -23,6 +23,12 @@ export class AuthService {
     if (user && user.deletedAt) {
       return null;
     }
+
+    // Check if the user is active
+    if (user && !user.isActive) {
+      return null; // User is inactive, prevent login
+    }
+
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
       return { ...result, mustChangePassword: user.mustChangePassword };

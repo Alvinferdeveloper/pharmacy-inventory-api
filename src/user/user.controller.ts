@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Delete, Param, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -66,5 +66,12 @@ export class UserController {
       throw new UnauthorizedException('No tiene permiso para actualizar el perfil de este usuario');
     }
     return this.userService.updateProfile(+id, updateProfileDto);
+  }
+
+  @Delete(':id')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(RoleName.ADMINISTRATOR)
+  remove(@Param('id') id: string) {
+    return this.userService.remove(+id);
   }
 }

@@ -11,7 +11,7 @@ export class User {
     @Column()
     name: string;
 
-    @Column({ unique: true })
+    @Column()
     identification: string;
 
     @Column()
@@ -23,12 +23,15 @@ export class User {
     @Column()
     password: string;
 
-    @Column({ default: true, name: 'must_change_password' })
-    mustChangePassword: boolean;
-
     @ManyToOne(() => Role, role => role.users)
     @JoinColumn({ name: 'id_role' })
     role: Role;
+
+    @Column({ name: 'must_change_password', default: true })
+    mustChangePassword: boolean;
+
+    @Column({ default: true })
+    isActive: boolean;
 
     @OneToMany(() => Invoice, invoice => invoice.user)
     invoices: Invoice[];

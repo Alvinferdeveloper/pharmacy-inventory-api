@@ -33,12 +33,17 @@ export class ReportsService {
     const localStart = new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0);
     const localEnd = new Date(endYear, endMonth - 1, endDay, 23, 59, 59, 999);
 
-    return this.invoiceRepository.find({
-      where: {
-        date: Between(localStart, localEnd),
-      },
-      relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
-    });
+    return this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .withDeleted()
+      .leftJoinAndSelect('invoice.customer', 'customer')
+      .leftJoinAndSelect('invoice.user', 'user')
+      .leftJoinAndSelect('invoice.invoiceDetails', 'invoiceDetails')
+      .leftJoinAndSelect('invoiceDetails.product', 'product')
+      .where('invoice.deletedAt IS NULL')
+      .andWhere('invoice.date BETWEEN :start AND :end', { start: localStart, end: localEnd })
+      .orderBy('invoice.idInvoice', 'DESC')
+      .getMany();
   }
 
   async generateSalesReportExcel(data: Invoice[]): Promise<Buffer> {
@@ -64,19 +69,24 @@ export class ReportsService {
   }
 
   async getSalesByCustomerReport(customerIdentification: string): Promise<Invoice[]> {
-    if(!customerIdentification){
+    if (!customerIdentification) {
       return [];
     }
     const customer = await this.customerRepository.findOne({ where: { identification: customerIdentification } });
     if (!customer) {
       return [];
     }
-    return this.invoiceRepository.find({
-      where: {
-        customer: { idCustomer: customer.idCustomer },
-      },
-      relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
-    });
+    return this.invoiceRepository
+      .createQueryBuilder('invoice')
+      .withDeleted()
+      .leftJoinAndSelect('invoice.customer', 'customer')
+      .leftJoinAndSelect('invoice.user', 'user')
+      .leftJoinAndSelect('invoice.invoiceDetails', 'invoiceDetails')
+      .leftJoinAndSelect('invoiceDetails.product', 'product')
+      .where('invoice.deletedAt IS NULL')
+      .andWhere('customer.idCustomer = :customerId', { customerId: customer.idCustomer })
+      .orderBy('invoice.idInvoice', 'DESC')
+      .getMany();
   }
 
   async generateSalesByCustomerReportExcel(data: Invoice[]): Promise<Buffer> {
@@ -106,12 +116,16 @@ export class ReportsService {
     if (!product) {
       return [];
     }
-    return this.invoiceDetailRepository.find({
-      where: {
-        product: { code: productCode },
-      },
-      relations: ['invoice', 'invoice.customer', 'invoice.user', 'product'],
-    });
+    return this.invoiceDetailRepository
+      .createQueryBuilder('invoiceDetail')
+      .withDeleted()
+      .leftJoinAndSelect('invoiceDetail.invoice', 'invoice')
+      .leftJoinAndSelect('invoice.customer', 'customer')
+      .leftJoinAndSelect('invoice.user', 'user')
+      .leftJoinAndSelect('invoiceDetail.product', 'product')
+      .where('invoiceDetail.deletedAt IS NULL')
+      .andWhere('product.code = :productCode', { productCode })
+      .getMany();
   }
 
   async generateSalesByProductReportExcel(data: InvoiceDetail[]): Promise<Buffer> {
@@ -133,9 +147,15 @@ export class ReportsService {
   }
 
   async getInventoryReport(): Promise<Product[]> {
-    return this.productRepository.find({
-      relations: ['category', 'supplier', 'inventoryMovements'],
-    });
+    return this.productRepository
+      .createQueryBuilder('product')
+      .withDeleted()
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.supplier', 'supplier')
+      .leftJoinAndSelect('product.inventoryMovements', 'inventoryMovements')
+      .where('product.deletedAt IS NULL')
+      .getMany();
+
   }
 
   async generateInventoryReportExcel(data: Product[]): Promise<Buffer> {
@@ -162,12 +182,14 @@ export class ReportsService {
     if (!supplier) {
       return [];
     }
-    return this.productRepository.find({
-      where: {
-        supplier: { idSupplier: supplier.idSupplier },
-      },
-      relations: ['category', 'supplier'],
-    });
+    return this.productRepository
+      .createQueryBuilder('product')
+      .withDeleted()
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.supplier', 'supplier')
+      .where('product.deletedAt IS NULL')
+      .andWhere('supplier.idSupplier = :supplierId', { supplierId: supplier.idSupplier })
+      .getMany();
   }
 
   async generateProductsBySupplierReportExcel(data: Product[]): Promise<Buffer> {

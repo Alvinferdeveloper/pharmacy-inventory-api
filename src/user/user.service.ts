@@ -112,16 +112,13 @@ export class UserService {
   }
 
   async toggleStatus(id: number): Promise<User> {
-    const user = await this.findOne(id);
+    const user = await this.userRepository.findOne({ where: { idUser: id }, withDeleted: true });
 
-    if (user.deletedAt) {
-      await this.userRepository.restore(id);
-      user.deletedAt = null;
-    } else {
-      await this.userRepository.softRemove(user);
-      user.deletedAt = new Date();
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
     }
 
+    user.isActive = !user.isActive;
     return this.userRepository.save(user);
   }
 
@@ -144,5 +141,13 @@ export class UserService {
     user.mustChangePassword = false;
 
     await this.userRepository.save(user);
+  }
+
+  async remove(id: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { idUser: id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    await this.userRepository.softDelete(id);
   }
 }

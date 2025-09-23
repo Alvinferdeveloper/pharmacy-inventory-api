@@ -111,10 +111,13 @@ export class InvoiceService {
   async findAll(date?: string): Promise<Invoice[]> {
     const query = this.invoiceRepository
       .createQueryBuilder('invoice')
+      .withDeleted()
       .leftJoinAndSelect('invoice.customer', 'customer')
       .leftJoinAndSelect('invoice.user', 'user')
       .leftJoinAndSelect('invoice.invoiceDetails', 'invoiceDetails')
-      .leftJoinAndSelect('invoiceDetails.product', 'product');
+      .leftJoinAndSelect('invoiceDetails.product', 'product')
+      .where('invoice.deletedAt IS NULL')
+      .orderBy('invoice.idInvoice', 'DESC');
     if (date) {
       const [year, month, day] = date.split('-').map(Number);
       const localStart = new Date(year, month - 1, day, 0, 0, 0, 0);
@@ -122,15 +125,22 @@ export class InvoiceService {
 
       return query.where({ date: Between(localStart, localEnd) }).orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
     }
+
     return query.orderBy({ 'invoice.idInvoice': 'DESC' }).getMany();
   }
 
   async findMyInvoices(userId: number): Promise<Invoice[]> {
-    return this.invoiceRepository.find({
-      where: { user: { idUser: userId } },
-      relations: ['customer', 'user', 'invoiceDetails', 'invoiceDetails.product'],
-      order: { idInvoice: 'DESC' },
-    });
+    return this.invoiceRepository
+    .createQueryBuilder('invoice')
+    .withDeleted() // 👈 habilita soft delete en joins
+    .leftJoinAndSelect('invoice.customer', 'customer')
+    .leftJoinAndSelect('invoice.user', 'user')
+    .leftJoinAndSelect('invoice.invoiceDetails', 'invoiceDetails')
+    .leftJoinAndSelect('invoiceDetails.product', 'product')
+    .where('invoice.deletedAt IS NULL')
+    .andWhere('user.idUser = :userId', { userId })
+    .orderBy('invoice.idInvoice', 'DESC')
+    .getMany();
   }
 
   async findOne(id: number): Promise<Invoice> {
@@ -142,7 +152,7 @@ export class InvoiceService {
   }
 
   async remove(id: number, currentUser: Express.User): Promise<void> {
-    const invoice = await this.invoiceRepository.findOne({ where: { idInvoice: id }, relations: ['user'] });
+    const invoice = await this.invoiceRepository.findOne({ where: { idInvoice: id }, relations: ['user'], withDeleted: true });
 
     if (!invoice) {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
